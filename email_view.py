@@ -1,6 +1,7 @@
 import assetloader
 import json
 import tkinter as tk
+from datetime import datetime
 
 #TODO: Add ability to receive more emails over time
 
@@ -77,6 +78,8 @@ class EmailView:
                 email_button.grid(row=i, column=0, pady=(0, 10))
 
 
+        self.root.after(1000, self.send_new_email)
+
     def load_email(self, email_i):
         self.context_window.config(state="normal")
         self.context_window.delete(1.0, tk.END)
@@ -89,3 +92,40 @@ class EmailView:
 
         self.context_window.config(state="disabled")
 
+    def send_new_email(self):
+        # First, figure out which email is next in queue.
+        self.new_emails_to_load_list = []
+        found_unsent_email = False
+
+        for email in self.email_dict:
+            if self.email_dict[email]["sent"]:
+                self.new_emails_to_load_list.insert(0, email)
+            elif not self.email_dict[email]["sent"]:
+                self.new_emails_to_load_list.insert(0, email)
+                break
+
+        print(self.emails_to_load_list)
+
+        # Then rebuild inbox (remove all email icons so they can be replaced)
+
+        #Get current datetime for the new email
+        #TODO: Have this updated in the JSON so when a second new email loads both don't get the new datetime
+
+        for widget in self.email_icon_window.grid_slaves():
+            widget.grid_remove()
+
+        for i, email in enumerate(self.new_emails_to_load_list):
+            print(self.emails_to_load_list)
+            email_by_idx = self.new_emails_to_load_list[i]
+
+            if self.email_dict[email_by_idx]["timestamp"] == 0:
+                now = datetime.now()
+                formatted_time = now.strftime("%I:%M %p")
+                formatted_date = now.strftime("%d/%m/%y")
+                self.email_dict[email_by_idx]["timestamp"] = f"{formatted_time}, {formatted_date}"
+
+            email_button = tk.Button(self.email_icon_window,
+                                     text=f"{self.email_dict[email_by_idx]["timestamp"]}\nFrom: {self.email_dict[email_by_idx]["sender"]}\nTo: {self.email_dict[email_by_idx]["recipient"]}",
+                                     border=0, highlightthickness=0, justify=tk.LEFT,
+                                     command=lambda email_i=self.email_dict[email_by_idx]: self.load_email(email_i))
+            email_button.grid(row=i, column=0, pady=(0, 10))

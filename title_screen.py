@@ -33,8 +33,9 @@ class TitleScreen:
             self._draw_title()
 
     def _draw_title(self):
+        self.root.update_idletasks()
         title = "Coincidence of Occlusion"
         if self.title_idx < 24:
             self.title_textfield.insert(tk.END, title[self.title_idx])
-            self.title_textfield.after(70, self._draw_title)
+            self.title_textfield.after(50, self._draw_title)
             self.title_idx += 1
