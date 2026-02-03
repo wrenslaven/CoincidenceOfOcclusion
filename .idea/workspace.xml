@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="96bba3cd-6dc5-4640-9498-659ed4f6cd64" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/CoincidenceOfOcclusion.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/back-button.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/desk-view.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/icon-email.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/icon-photos.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/icon-telescope.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/icon-trash.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/light-switch-OFF.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/light-switch-ON.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/screen-bezel.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/art/title-screen-telescope.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assetloader.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/computer_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/desk_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/email_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emails.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/starfield.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/telescope_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/title_screen.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="396A4ygYqdPg4fUJgHIRw0ZzHye" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortKey" value="BY_TIME_DESCENDING" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.assetloader.executor": "Run",
+    "Python.computer_view.executor": "Run",
+    "Python.desk_view.executor": "Run",
+    "Python.email_view.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.starfield.executor": "Run",
+    "Python.states.executor": "Run",
+    "Python.telescope_view.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\wrens\PycharmProjects\CoincidenceOfOcclusion\art" />
+      <recent name="C:\Users\wrens\PycharmProjects\CoincidenceOfOcclusion" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-d2614ccfe7c8-e2d783800521-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.28774.16" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="96bba3cd-6dc5-4640-9498-659ed4f6cd64" name="Changes" comment="" />
+      <created>1770005959675</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1770005959675</updated>
+    </task>
+    <servers />
+  </component>
+</project>
