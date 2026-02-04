@@ -5,6 +5,7 @@ from computer_view import ComputerView
 from email_view import EmailView
 from title_screen import TitleScreen
 from telescope_view import TelescopeView
+import pygame
 
 class Controller:
     """Controller class for the gamestates."""
@@ -29,6 +30,19 @@ class Controller:
         self.email_view_inst = EmailView(self.root, self, self.canvas)
         self.telescope_view_inst = TelescopeView(self.root, self, self.canvas)
 
+        # --- AUDIO ---
+
+        pygame.mixer.init()
+
+        try:
+            self.mail_sfx = pygame.mixer.Sound('mail.wav')
+            self.mail_sfx.set_volume(0.1)
+            self.bg_sfx = pygame.mixer.Sound("bg-sfx-final.wav")
+            self.bg_sfx.set_volume(0.1)
+
+        except pygame.error as e:
+            print(f"Could not load sound file: {e}")
+
         # --- LOOPS AND METHOD CALLS ---
 
         self.title_screen_inst.draw_titlescreen()
@@ -50,7 +64,6 @@ class Controller:
             print(self.gamestate)
             self.to_desk_view(event=None)
         elif self.gamestate == "telescope" or self.gamestate == "email":
-            print(self.gamestate)
             self.to_computer_view(event=None)
         else:
             print(self.gamestate)

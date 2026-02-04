@@ -55,9 +55,12 @@ class EmailView:
         self.canvas.tag_bind(self.back_button_id, "<Button-1>", self.controller.to_parent_gamestate)
 
         self.email_frame = tk.Frame(self.root, width=600, height=375)
-        self.canvas.create_window(400, 250, window=self.email_frame)
+        self.canvas.create_window(400, 290, window=self.email_frame)
 
-        self.context_window = tk.Text(self.email_frame, width=45, height=23, wrap="word", state="disabled")
+        self.context_window = tk.Text(self.email_frame, width=45, height=28, wrap="word", state="disabled")
+        self.context_window.tag_configure('bold_tag', font=('Courier', 11, 'bold'))
+        self.context_window.tag_configure('normal_tag', font=('Courier', 11))
+
         self.context_window.grid(row=0, column=1)
 
         self.email_icon_window = tk.Frame(self.email_frame)
@@ -85,10 +88,16 @@ class EmailView:
         self.context_window.delete(1.0, tk.END)
 
         # Before adding body, add header information
-        self.context_window.insert(1.0,
-                                   f"From: {email_i["sender"]}\nTo: {email_i["recipient"]}\nSent: {email_i["timestamp"]}\nSubject: {email_i["subject"]}\n\n")
+        self.context_window.insert(tk.END,"From: ", "bold_tag")
+        self.context_window.insert(tk.END,f"{email_i["sender"]}\n")
+        self.context_window.insert(tk.END,f"To: ", "bold_tag")
+        self.context_window.insert(tk.END,f"{email_i["recipient"]}\n")
+        self.context_window.insert(tk.END,f"Sent: ", "bold_tag")
+        self.context_window.insert(tk.END,f"{email_i["timestamp"]}\n")
+        self.context_window.insert(tk.END,f"Subject: ", "bold_tag")
+        self.context_window.insert(tk.END,f"{email_i["subject"]}\n\n")
 
-        self.context_window.insert(tk.END, email_i["body"])
+        self.context_window.insert(tk.END, email_i["body"], "normal_tag")
 
         self.context_window.config(state="disabled")
 
@@ -129,3 +138,6 @@ class EmailView:
                                      border=0, highlightthickness=0, justify=tk.LEFT,
                                      command=lambda email_i=self.email_dict[email_by_idx]: self.load_email(email_i))
             email_button.grid(row=i, column=0, pady=(0, 10))
+
+
+            self.controller.mail_sfx.play()

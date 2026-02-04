@@ -14,6 +14,8 @@ class Deskview:
     def load_desk_view(self, event):
         self.controller.gamestate = "desk_view"
 
+        self.controller.bg_sfx.play()
+
         self.canvas.delete("all")
         self.starfield_inst.generate_starfield()
         self.desk_view_id = self.canvas.create_image(400, 300, image=self.desk_view)
