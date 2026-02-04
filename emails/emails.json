@@ -1,7 +1,7 @@
 {
     "email0" : {
         "sent" : true,
-        "timestamp" : "3:12 AM, 07/01/1993",
+        "timestamp" : "03:12 AM, 07/01/1993",
         "sender" : "Jesse Waller",
         "recipient" : "Eliza Waller",
         "subject" : "Starsickness",
@@ -9,7 +9,7 @@
     },
     "email1" : {
         "sent" : true,
-        "timestamp" : "9:05 AM, 08/01/1993",
+        "timestamp" : "09:05 AM, 08/01/1993",
         "sender" : "Eliza Waller",
         "recipient" : "Jesse Waller",
         "subject" : "Re: Starsickness",
@@ -17,7 +17,7 @@
     },
     "email2" : {
         "sent" : true,
-        "timestamp" : "1:44 AM, 15/01/1993",
+        "timestamp" : "01:44 AM, 15/01/1993",
         "sender" : "Jesse Waller",
         "recipient" : "Eliza Waller",
         "subject" : "Coincidence of Occlusion",
@@ -25,7 +25,7 @@
     },
     "email3" : {
         "sent" : true,
-        "timestamp" : "2:18 AM, 20/01/1993",
+        "timestamp" : "02:18 AM, 20/01/1993",
         "sender" : "Jesse Waller",
         "recipient" : "Eliza Waller",
         "subject" : "Patterns",

@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="96bba3cd-6dc5-4640-9498-659ed4f6cd64" name="Changes" comment="added transits func with a planet and a new email func with os datetime">
-      <change afterPath="$PROJECT_DIR$/bg-sfx-final.wav" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mail.wav" afterDir="false" />
+    <list default="true" id="96bba3cd-6dc5-4640-9498-659ed4f6cd64" name="Changes" comment="added sound effects and reformatted email context window">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desk_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/desk_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bg-sfx-final.wav" beforeDir="false" afterPath="$PROJECT_DIR$/sfx/bg-sfx-final.wav" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/email_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/email_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emails.json" beforeDir="false" afterPath="$PROJECT_DIR$/emails.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emails.json" beforeDir="false" afterPath="$PROJECT_DIR$/emails/emails.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mail.wav" beforeDir="false" afterPath="$PROJECT_DIR$/sfx/mail.wav" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -79,6 +78,8 @@
       <recent name="C:\Users\wrens\PycharmProjects\CoincidenceOfOcclusion" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\wrens\PycharmProjects\CoincidenceOfOcclusion\emails" />
+      <recent name="C:\Users\wrens\PycharmProjects\CoincidenceOfOcclusion\sfx" />
       <recent name="C:\Users\wrens\PycharmProjects\CoincidenceOfOcclusion" />
       <recent name="C:\Users\wrens\PycharmProjects\CoincidenceOfOcclusion\art" />
     </key>
@@ -106,11 +107,20 @@
       <option name="project" value="LOCAL" />
       <updated>1770156922061</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="added sound effects and reformatted email context window">
+      <option name="closed" value="true" />
+      <created>1770174239246</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1770174239246</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added transits func with a planet and a new email func with os datetime" />
-    <option name="LAST_COMMIT_MESSAGE" value="added transits func with a planet and a new email func with os datetime" />
+    <MESSAGE value="added sound effects and reformatted email context window" />
+    <option name="LAST_COMMIT_MESSAGE" value="added sound effects and reformatted email context window" />
   </component>
 </project>

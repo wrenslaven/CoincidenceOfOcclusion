@@ -35,9 +35,9 @@ class Controller:
         pygame.mixer.init()
 
         try:
-            self.mail_sfx = pygame.mixer.Sound('mail.wav')
+            self.mail_sfx = pygame.mixer.Sound('sfx/mail.wav')
             self.mail_sfx.set_volume(0.1)
-            self.bg_sfx = pygame.mixer.Sound("bg-sfx-final.wav")
+            self.bg_sfx = pygame.mixer.Sound("sfx/bg-sfx-final.wav")
             self.bg_sfx.set_volume(0.1)
 
         except pygame.error as e:

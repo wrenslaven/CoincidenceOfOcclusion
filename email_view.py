@@ -3,7 +3,7 @@ import json
 import tkinter as tk
 from datetime import datetime
 
-#TODO: Add ability to receive more emails over time
+#TODO: Add a pagination system for the emails so they don't go off screen
 
 class EmailView:
     def __init__(self, root, controller, canvas):
@@ -12,7 +12,7 @@ class EmailView:
         self.controller = controller
         self.canvas = canvas
 
-        email_filepath = "emails.json"
+        email_filepath = "emails/emails.json"
         try:
             with open(email_filepath, "r", encoding="utf-8") as file:
                 self.email_dict = json.load(file)
@@ -35,7 +35,11 @@ class EmailView:
         self.icon_email = self.image_dict["icon-email.png"]
         self.back_button = self.image_dict["back-button.png"]
 
+        self.current_page_num = 0
+
     def load_email_view(self, event):
+        currently_loaded = 0
+
         self.controller.gamestate = "email"
 
         self.desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="dark gray")
@@ -49,76 +53,97 @@ class EmailView:
         self.icon_photos_id = self.canvas.create_image(110, 240, image=self.icon_photos)
 
         self.icon_email_id = self.canvas.create_image(110, 320, image=self.icon_email)
-        # Remember not to tag_bind widgets when their window is already up, so they don't stack on top of themselves?
+        # Remember not to tag_bind widgets when their window is already up, so they don't stack on top of themselves
+
 
         self.back_button_id = self.canvas.create_image(110, 475, image=self.back_button)
         self.canvas.tag_bind(self.back_button_id, "<Button-1>", self.controller.to_parent_gamestate)
 
         self.email_frame = tk.Frame(self.root, width=600, height=375)
-        self.canvas.create_window(400, 290, window=self.email_frame)
+        self.canvas.create_window(420, 290, window=self.email_frame)
 
-        self.context_window = tk.Text(self.email_frame, width=45, height=28, wrap="word", state="disabled")
-        self.context_window.tag_configure('bold_tag', font=('Courier', 11, 'bold'))
-        self.context_window.tag_configure('normal_tag', font=('Courier', 11))
+        self.current_email_window = tk.Text(self.email_frame, width=50, height=25, wrap="word", state="disabled")
+        self.current_email_window.tag_configure('bold_tag', font=('Courier', 11, 'bold'))
+        self.current_email_window.tag_configure('normal_tag', font=('Courier', 11))
 
-        self.context_window.grid(row=0, column=1)
+        self.current_email_window.grid(row=0, column=1)
 
         self.email_icon_window = tk.Frame(self.email_frame)
         self.email_icon_window.grid(row=0, column=0, sticky="nw")
 
+        self.email_pagination_frame = tk.Frame(self.email_frame)
+        self.email_pagination_frame.grid(row=1, column=0, sticky="sw")
+
+        self.prev_button = tk.Button(self.email_pagination_frame, text="<", command=self.load_prev_page, state="disabled")
+        self.prev_button.grid(row=0, column=0, padx=10, pady=10)
+        self.next_button = tk.Button(self.email_pagination_frame, text=">", command=self.load_next_page, state="disabled")
+        self.next_button.grid(row=0, column=2, padx=5, pady=10)
+        self.current_emails_label = tk.Label(self.email_pagination_frame, text="4 of 4")
+        self.current_emails_label.grid(row=0, column=1, padx=10, pady=10)
+
+
         self.emails_to_load_list = []
         for email in self.email_dict:
-            if self.email_dict[email]["sent"]:
+            if self.email_dict[email]["sent"] :
                 self.emails_to_load_list.insert(0, email)
 
         for i, email in enumerate(self.emails_to_load_list):
             email_by_idx = self.emails_to_load_list[i]
             if self.email_dict[email_by_idx]["sent"]:
                 email_button = tk.Button(self.email_icon_window,
-                                         text=f"{self.email_dict[email_by_idx]["timestamp"]}\nFrom: {self.email_dict[email_by_idx]["sender"]}\nTo: {self.email_dict[email_by_idx]["recipient"]}",
+                                         text=f"{self.email_dict[email_by_idx]["timestamp"]}\nFrom: "
+                                              f"{self.email_dict[email_by_idx]["sender"]}\nTo: "
+                                              f"{self.email_dict[email_by_idx]["recipient"]}\nSubject: "
+                                              f"{self.email_dict[email_by_idx]["subject"][:10]}"
+                                              f"{"..." if len(self.email_dict[email_by_idx]["subject"]) > 10 else ""}",
                                          border=0, highlightthickness=0, justify=tk.LEFT,
                                          command=lambda email_i=self.email_dict[email_by_idx]: self.load_email(email_i))
-                email_button.grid(row=i, column=0, pady=(0, 10))
+                if i <= 4:
+                    email_button.page_num = 0
+                else:
+                    email_button.page_num = 1
+                if email_button.page_num == self.current_page_num:
+                    email_button.grid(row=i, column=0, pady=(0, 10))
 
+        self.current_emails_label.config(text=f"{len(self.emails_to_load_list)} of {len(self.emails_to_load_list)}")
 
-        self.root.after(1000, self.send_new_email)
+        if len(self.emails_to_load_list) < 10:
+            self.root.after(1000, self.send_new_email)
+        if len(self.emails_to_load_list) > 5:
+            self.prev_button.config(state="normal")
+            self.next_button.config(state="normal")
+            self.current_emails_label.config(text=f"5 of {len(self.emails_to_load_list)}")
 
     def load_email(self, email_i):
-        self.context_window.config(state="normal")
-        self.context_window.delete(1.0, tk.END)
+        self.current_email_window.config(state="normal")
+        self.current_email_window.delete(1.0, tk.END)
 
         # Before adding body, add header information
-        self.context_window.insert(tk.END,"From: ", "bold_tag")
-        self.context_window.insert(tk.END,f"{email_i["sender"]}\n")
-        self.context_window.insert(tk.END,f"To: ", "bold_tag")
-        self.context_window.insert(tk.END,f"{email_i["recipient"]}\n")
-        self.context_window.insert(tk.END,f"Sent: ", "bold_tag")
-        self.context_window.insert(tk.END,f"{email_i["timestamp"]}\n")
-        self.context_window.insert(tk.END,f"Subject: ", "bold_tag")
-        self.context_window.insert(tk.END,f"{email_i["subject"]}\n\n")
+        self.current_email_window.insert(tk.END,"From: ", "bold_tag")
+        self.current_email_window.insert(tk.END,f"{email_i["sender"]}\n")
+        self.current_email_window.insert(tk.END,f"To: ", "bold_tag")
+        self.current_email_window.insert(tk.END,f"{email_i["recipient"]}\n")
+        self.current_email_window.insert(tk.END,f"Sent: ", "bold_tag")
+        self.current_email_window.insert(tk.END,f"{email_i["timestamp"]}\n")
+        self.current_email_window.insert(tk.END,f"Subject: ", "bold_tag")
+        self.current_email_window.insert(tk.END,f"{email_i["subject"]}\n\n")
 
-        self.context_window.insert(tk.END, email_i["body"], "normal_tag")
+        self.current_email_window.insert(tk.END, email_i["body"], "normal_tag")
 
-        self.context_window.config(state="disabled")
+        self.current_email_window.config(state="disabled")
 
     def send_new_email(self):
-        # First, figure out which email is next in queue.
+        self.email_buttons_list = []
+
         self.new_emails_to_load_list = []
-        found_unsent_email = False
 
         for email in self.email_dict:
             if self.email_dict[email]["sent"]:
                 self.new_emails_to_load_list.insert(0, email)
             elif not self.email_dict[email]["sent"]:
                 self.new_emails_to_load_list.insert(0, email)
+                self.email_dict[email]["sent"] = True
                 break
-
-        print(self.emails_to_load_list)
-
-        # Then rebuild inbox (remove all email icons so they can be replaced)
-
-        #Get current datetime for the new email
-        #TODO: Have this updated in the JSON so when a second new email loads both don't get the new datetime
 
         for widget in self.email_icon_window.grid_slaves():
             widget.grid_remove()
@@ -130,14 +155,60 @@ class EmailView:
             if self.email_dict[email_by_idx]["timestamp"] == 0:
                 now = datetime.now()
                 formatted_time = now.strftime("%I:%M %p")
-                formatted_date = now.strftime("%d/%m/%y")
-                self.email_dict[email_by_idx]["timestamp"] = f"{formatted_time}, {formatted_date}"
+                formatted_date = now.strftime("%d/%m")
+                self.email_dict[email_by_idx]["timestamp"] = f"{formatted_time}, {formatted_date}/1993"
 
             email_button = tk.Button(self.email_icon_window,
-                                     text=f"{self.email_dict[email_by_idx]["timestamp"]}\nFrom: {self.email_dict[email_by_idx]["sender"]}\nTo: {self.email_dict[email_by_idx]["recipient"]}",
+                                     text=f"{self.email_dict[email_by_idx]["timestamp"]}\nFrom: "
+                                          f"{self.email_dict[email_by_idx]["sender"]}\nTo: "
+                                          f"{self.email_dict[email_by_idx]["recipient"]}\nSubject: "
+                                          f"{self.email_dict[email_by_idx]["subject"][:10]}"
+                                          f"{"..." if len(self.email_dict[email_by_idx]["subject"]) > 10 else ""}",
                                      border=0, highlightthickness=0, justify=tk.LEFT,
                                      command=lambda email_i=self.email_dict[email_by_idx]: self.load_email(email_i))
-            email_button.grid(row=i, column=0, pady=(0, 10))
+            if i <= 4:
+                email_button.page_num = 0
+            else:
+                email_button.page_num = 1 # hardcoded to 2 pages for now
+                self.prev_button.config(state="normal")
+                self.next_button.config(state="normal")
+            self.email_buttons_list.append(email_button)
+
+            if email_button.page_num == self.current_page_num:
+                email_button.grid(row=i, column=0, pady=(0, 10))
+
+        if len(self.new_emails_to_load_list) > 5:
+            self.current_emails_label.config(text=f"5 of {len(self.new_emails_to_load_list)}")
+        else:
+            self.current_emails_label.config(text=f"{len(self.new_emails_to_load_list)} of {len(self.new_emails_to_load_list)}")
+
+        self.controller.mail_sfx.play()
+
+    def load_next_page(self):
+        currently_loaded = 0
+        for widget in self.email_icon_window.grid_slaves():
+            widget.grid_remove()
+
+        self.current_page_num = min(self.current_page_num + 1, 1)
+        for i, email_button in enumerate(self.email_buttons_list):
+            if email_button.page_num == self.current_page_num:
+                email_button.grid(row=i, column=0, pady=(0, 10))
+                currently_loaded += 1
+
+        self.current_emails_label.config(
+            text=f"{currently_loaded} of {len(self.emails_to_load_list) + 1}")
 
 
-            self.controller.mail_sfx.play()
+    def load_prev_page(self):
+        currently_loaded = 0
+        for widget in self.email_icon_window.grid_slaves():
+            widget.grid_remove()
+
+        self.current_page_num = max(self.current_page_num - 1, 0)
+        for i, email_button in enumerate(self.email_buttons_list):
+            if email_button.page_num == self.current_page_num:
+                email_button.grid(row=i, column=0, pady=(0, 10))
+                currently_loaded += 1
+
+        self.current_emails_label.config(
+            text=f"{currently_loaded} of {len(self.emails_to_load_list) + 1}")
