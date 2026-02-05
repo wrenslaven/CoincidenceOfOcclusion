@@ -18,5 +18,5 @@ class Deskview:
 
         self.canvas.delete("all")
         self.starfield_inst.generate_starfield()
-        self.desk_view_id = self.canvas.create_image(400, 300, image=self.desk_view)
-        self.canvas.tag_bind(self.desk_view_id, "<Button-1>", self.controller.to_computer_view)
+        desk_view_id = self.canvas.create_image(400, 300, image=self.desk_view)
+        self.canvas.tag_bind(desk_view_id, "<Button-1>", self.controller.to_computer_view)

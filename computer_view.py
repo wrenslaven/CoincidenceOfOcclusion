@@ -21,18 +21,18 @@ class ComputerView:
         self.controller.gamestate = "computer"
         self.canvas.delete("all")
 
-        self.desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="dark gray")
-        self.screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
+        desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="dark gray")
+        screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
 
-        self.icon_trash_id = self.canvas.create_image(110, 80, image=self.icon_trash)
+        icon_trash_id = self.canvas.create_image(110, 80, image=self.icon_trash)
 
-        self.icon_telescope_id = self.canvas.create_image(110, 160, image=self.icon_telescope)
-        self.canvas.tag_bind(self.icon_telescope_id, "<Button-1>", self.controller.to_telescope_view)
+        icon_telescope_id = self.canvas.create_image(110, 160, image=self.icon_telescope)
+        self.canvas.tag_bind(icon_telescope_id, "<Button-1>", self.controller.to_telescope_view)
 
-        self.icon_photos_id = self.canvas.create_image(110, 240, image=self.icon_photos)
+        icon_photos_id = self.canvas.create_image(110, 240, image=self.icon_photos)
 
-        self.icon_email_id = self.canvas.create_image(110, 320, image=self.icon_email)
-        self.canvas.tag_bind(self.icon_email_id, "<Button-1>", self.controller.to_email_view)
+        icon_email_id = self.canvas.create_image(110, 320, image=self.icon_email)
+        self.canvas.tag_bind(icon_email_id, "<Button-1>", self.controller.to_email_view)
 
-        self.back_button_id = self.canvas.create_image(110, 475, image=self.back_button)
-        self.canvas.tag_bind(self.back_button_id, "<Button-1>", self.controller.to_parent_gamestate)
+        back_button_id = self.canvas.create_image(110, 475, image=self.back_button)
+        self.canvas.tag_bind(back_button_id, "<Button-1>", self.controller.to_parent_gamestate)

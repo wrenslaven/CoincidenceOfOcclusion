@@ -7,14 +7,15 @@ from title_screen import TitleScreen
 from telescope_view import TelescopeView
 import pygame
 
-#TODO: Add a timer for the main game loop (trigger transits and new emails depending on gamestate)
-
 class Controller:
     """Controller class for the gamestates."""
     def __init__(self):
         self.root = root
 
         self.gamestate = "title"
+
+        self.new_email_timer = 1
+        self.new_transit_timer = 1
 
         # --- UI ELEMENTS ---
         self.starfield_frame = tk.Frame(self.root)
@@ -48,6 +49,7 @@ class Controller:
         # --- LOOPS AND METHOD CALLS ---
 
         self.title_screen_inst.draw_titlescreen()
+        self.main_game_loop()
 
     def to_desk_view(self, event):
         self.desk_view_inst.load_desk_view(event)
@@ -69,6 +71,21 @@ class Controller:
             self.to_computer_view(event=None)
         else:
             print(self.gamestate)
+
+    def main_game_loop(self):
+        """Runs once a second and checks whether to run events"""
+        if self.gamestate != "title":
+            self.new_transit_timer += 1
+            self.new_email_timer += 1
+
+        if self.new_email_timer % 60 == 0 and len(self.email_view_inst.emails_to_load_list) < 10:
+            self.email_view_inst.send_new_email()
+            self.new_email_timer = 1
+        if self.new_transit_timer % 5 == 0:
+            self.telescope_view_inst.create_transit_object()
+            self.new_transit_timer = 1
+
+        self.root.after(1000, self.main_game_loop)
 
 if __name__ == "__main__":
     root = tk.Tk()

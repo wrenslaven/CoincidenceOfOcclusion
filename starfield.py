@@ -1,6 +1,5 @@
 """Generates a random pattern of white stars on a black sky (tkinter Canvas)"""
 import random
-import tkinter as tk
 
 class Starfield:
     def __init__(self, root, canvas):
