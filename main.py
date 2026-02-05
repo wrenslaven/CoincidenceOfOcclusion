@@ -7,6 +7,8 @@ from title_screen import TitleScreen
 from telescope_view import TelescopeView
 import pygame
 
+#TODO: Add a timer for the main game loop (trigger transits and new emails depending on gamestate)
+
 class Controller:
     """Controller class for the gamestates."""
     def __init__(self):

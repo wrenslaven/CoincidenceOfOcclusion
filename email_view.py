@@ -3,8 +3,6 @@ import json
 import tkinter as tk
 from datetime import datetime
 
-#TODO: Add a pagination system for the emails so they don't go off screen
-
 class EmailView:
     def __init__(self, root, controller, canvas):
 
@@ -87,9 +85,39 @@ class EmailView:
             if self.email_dict[email]["sent"] :
                 self.emails_to_load_list.insert(0, email)
 
+        self.load_email_icons(add_new_email=False)
+
+        self.current_emails_label.config(text=f"{len(self.emails_to_load_list)} of {len(self.emails_to_load_list)}")
+
+        if len(self.emails_to_load_list) < 10:
+            self.root.after(1000, self.send_new_email)
+        if len(self.emails_to_load_list) > 4:
+            self.prev_button.config(state="normal")
+            self.next_button.config(state="normal")
+            self.current_emails_label.config(text=f"5 of {len(self.emails_to_load_list)}")
+
+    def load_email_icons(self, add_new_email):
+        for widget in self.email_icon_window.grid_slaves():
+            widget.grid_remove()
+        self.email_buttons_list = []
+        self.emails_to_load_list = []
+        for email in self.email_dict:
+            if self.email_dict[email]["sent"]:
+                self.emails_to_load_list.insert(0, email)
+            elif not self.email_dict[email]["sent"] and add_new_email:
+                self.emails_to_load_list.insert(0, email)
+                self.email_dict[email]["sent"] = True
+                break
+
         for i, email in enumerate(self.emails_to_load_list):
             email_by_idx = self.emails_to_load_list[i]
             if self.email_dict[email_by_idx]["sent"]:
+                if self.email_dict[email_by_idx]["timestamp"] == 0:
+                    now = datetime.now()
+                    formatted_time = now.strftime("%I:%M %p")
+                    formatted_date = now.strftime("%d/%m")
+                    self.email_dict[email_by_idx]["timestamp"] = f"{formatted_time}, {formatted_date}/1993"
+
                 email_button = tk.Button(self.email_icon_window,
                                          text=f"{self.email_dict[email_by_idx]["timestamp"]}\nFrom: "
                                               f"{self.email_dict[email_by_idx]["sender"]}\nTo: "
@@ -98,21 +126,13 @@ class EmailView:
                                               f"{"..." if len(self.email_dict[email_by_idx]["subject"]) > 10 else ""}",
                                          border=0, highlightthickness=0, justify=tk.LEFT,
                                          command=lambda email_i=self.email_dict[email_by_idx]: self.load_email(email_i))
+                self.email_buttons_list.append(email_button)
                 if i <= 4:
                     email_button.page_num = 0
                 else:
                     email_button.page_num = 1
                 if email_button.page_num == self.current_page_num:
                     email_button.grid(row=i, column=0, pady=(0, 10))
-
-        self.current_emails_label.config(text=f"{len(self.emails_to_load_list)} of {len(self.emails_to_load_list)}")
-
-        if len(self.emails_to_load_list) < 10:
-            self.root.after(1000, self.send_new_email)
-        if len(self.emails_to_load_list) > 5:
-            self.prev_button.config(state="normal")
-            self.next_button.config(state="normal")
-            self.current_emails_label.config(text=f"5 of {len(self.emails_to_load_list)}")
 
     def load_email(self, email_i):
         self.current_email_window.config(state="normal")
@@ -133,54 +153,12 @@ class EmailView:
         self.current_email_window.config(state="disabled")
 
     def send_new_email(self):
-        self.email_buttons_list = []
+        self.load_email_icons(add_new_email=True)
 
-        self.new_emails_to_load_list = []
-
-        for email in self.email_dict:
-            if self.email_dict[email]["sent"]:
-                self.new_emails_to_load_list.insert(0, email)
-            elif not self.email_dict[email]["sent"]:
-                self.new_emails_to_load_list.insert(0, email)
-                self.email_dict[email]["sent"] = True
-                break
-
-        for widget in self.email_icon_window.grid_slaves():
-            widget.grid_remove()
-
-        for i, email in enumerate(self.new_emails_to_load_list):
-            print(self.emails_to_load_list)
-            email_by_idx = self.new_emails_to_load_list[i]
-
-            if self.email_dict[email_by_idx]["timestamp"] == 0:
-                now = datetime.now()
-                formatted_time = now.strftime("%I:%M %p")
-                formatted_date = now.strftime("%d/%m")
-                self.email_dict[email_by_idx]["timestamp"] = f"{formatted_time}, {formatted_date}/1993"
-
-            email_button = tk.Button(self.email_icon_window,
-                                     text=f"{self.email_dict[email_by_idx]["timestamp"]}\nFrom: "
-                                          f"{self.email_dict[email_by_idx]["sender"]}\nTo: "
-                                          f"{self.email_dict[email_by_idx]["recipient"]}\nSubject: "
-                                          f"{self.email_dict[email_by_idx]["subject"][:10]}"
-                                          f"{"..." if len(self.email_dict[email_by_idx]["subject"]) > 10 else ""}",
-                                     border=0, highlightthickness=0, justify=tk.LEFT,
-                                     command=lambda email_i=self.email_dict[email_by_idx]: self.load_email(email_i))
-            if i <= 4:
-                email_button.page_num = 0
-            else:
-                email_button.page_num = 1 # hardcoded to 2 pages for now
-                self.prev_button.config(state="normal")
-                self.next_button.config(state="normal")
-            self.email_buttons_list.append(email_button)
-
-            if email_button.page_num == self.current_page_num:
-                email_button.grid(row=i, column=0, pady=(0, 10))
-
-        if len(self.new_emails_to_load_list) > 5:
-            self.current_emails_label.config(text=f"5 of {len(self.new_emails_to_load_list)}")
+        if len(self.emails_to_load_list) > 5:
+            self.current_emails_label.config(text=f"5 of {len(self.emails_to_load_list)}")
         else:
-            self.current_emails_label.config(text=f"{len(self.new_emails_to_load_list)} of {len(self.new_emails_to_load_list)}")
+            self.current_emails_label.config(text=f"{len(self.emails_to_load_list)} of {len(self.emails_to_load_list)}")
 
         self.controller.mail_sfx.play()
 
@@ -196,8 +174,7 @@ class EmailView:
                 currently_loaded += 1
 
         self.current_emails_label.config(
-            text=f"{currently_loaded} of {len(self.emails_to_load_list) + 1}")
-
+            text=f"{currently_loaded} of {len(self.emails_to_load_list)}")
 
     def load_prev_page(self):
         currently_loaded = 0
@@ -211,4 +188,4 @@ class EmailView:
                 currently_loaded += 1
 
         self.current_emails_label.config(
-            text=f"{currently_loaded} of {len(self.emails_to_load_list) + 1}")
+            text=f"{currently_loaded} of {len(self.emails_to_load_list)}")

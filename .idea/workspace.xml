@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="96bba3cd-6dc5-4640-9498-659ed4f6cd64" name="Changes" comment="added sound effects and reformatted email context window">
+    <list default="true" id="96bba3cd-6dc5-4640-9498-659ed4f6cd64" name="Changes" comment="added pagination to email_view and reorganized directory">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bg-sfx-final.wav" beforeDir="false" afterPath="$PROJECT_DIR$/sfx/bg-sfx-final.wav" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/email_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/email_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emails.json" beforeDir="false" afterPath="$PROJECT_DIR$/emails/emails.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mail.wav" beforeDir="false" afterPath="$PROJECT_DIR$/sfx/mail.wav" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/telescope_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/telescope_view.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,12 +113,21 @@
       <option name="project" value="LOCAL" />
       <updated>1770174239246</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="added pagination to email_view and reorganized directory">
+      <option name="closed" value="true" />
+      <created>1770232179181</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1770232179181</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added transits func with a planet and a new email func with os datetime" />
     <MESSAGE value="added sound effects and reformatted email context window" />
-    <option name="LAST_COMMIT_MESSAGE" value="added sound effects and reformatted email context window" />
+    <MESSAGE value="added pagination to email_view and reorganized directory" />
+    <option name="LAST_COMMIT_MESSAGE" value="added pagination to email_view and reorganized directory" />
   </component>
 </project>

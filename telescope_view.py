@@ -36,7 +36,7 @@ class TelescopeView:
         pos = self.canvas.coords(transit_object_id)
 
         if self.controller.gamestate == "telescope":
-            if pos[0] < 700:
+            if pos and pos[0] < 700:
                 self.canvas.move(transit_object_id, 1, 0)
             else:
                 self.canvas.coords(transit_object_id, 190, 290, 210, 310)
