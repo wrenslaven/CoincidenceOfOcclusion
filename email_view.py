@@ -1,6 +1,7 @@
 import assetloader
 import json
 import tkinter as tk
+import tkinter.font as tkfont
 from datetime import datetime
 
 class EmailView:
@@ -10,8 +11,13 @@ class EmailView:
         self.controller = controller
         self.canvas = canvas
 
+        self.font = tkfont.Font(family="W95FA", size=12)
+
         self.emails_to_load_list = []
         self.email_buttons_list = []
+
+        self.PAGE_SIZE = 4
+        self.current_page_num = 0
 
         email_filepath = "emails/emails.json"
         try:
@@ -34,30 +40,33 @@ class EmailView:
         self.icon_telescope = self.image_dict["icon-telescope.png"]
         self.icon_photos = self.image_dict["icon-photos.png"]
         self.icon_email = self.image_dict["icon-email.png"]
-        self.back_button = self.image_dict["back-button.png"]
 
         self.current_page_num = 0
 
-        self.email_frame = tk.Frame(self.root, width=600, height=375)
+        self.email_frame = tk.Frame(self.root, width=500, height=430)
+        self.email_frame.grid_propagate(0)
 
-        self.current_email_window = tk.Text(self.email_frame, width=50, height=25, wrap="word", state="disabled")
-        self.current_email_window.tag_configure('bold_tag', font=('Courier', 11, 'bold'))
-        self.current_email_window.tag_configure('normal_tag', font=('Courier', 11))
+        self.current_email_window = tk.Text(self.email_frame, width=40, height=21, wrap="word", state="disabled", font=self.font)
 
         self.email_icon_window = tk.Frame(self.email_frame)
-        self.email_pagination_frame = tk.Frame(self.email_frame)
+
+        self.email_pagination_frame = tk.Frame(self.email_frame, width=165, height=45)
+        self.email_pagination_frame.grid_propagate(0)
+
         self.prev_button = tk.Button(self.email_pagination_frame, text="<", command=self.load_prev_page,
                                      state="disabled")
         self.next_button = tk.Button(self.email_pagination_frame, text=">", command=self.load_next_page,
                                      state="disabled")
-        self.current_emails_label = tk.Label(self.email_pagination_frame, text="4 of 4")
+        self.current_emails_label = tk.Label(self.email_pagination_frame, text=f"1 - 4 of 4", width=11)
+
+
 
     def load_email_view(self, event):
         currently_loaded = 0
 
         self.controller.gamestate = "email"
 
-        desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="dark gray")
+        desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="teal")
         screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
 
         icon_trash_id = self.canvas.create_image(110, 80, image=self.icon_trash)
@@ -66,21 +75,18 @@ class EmailView:
         self.canvas.tag_bind(icon_telescope_id, "<Button-1>", self.controller.to_telescope_view)
 
         icon_photos_id = self.canvas.create_image(110, 240, image=self.icon_photos)
+        self.canvas.tag_bind(icon_photos_id, "<Button-1>", self.controller.to_photos_view)
 
         icon_email_id = self.canvas.create_image(110, 320, image=self.icon_email)
         # Remember not to tag_bind widgets when their window is already up, so they don't stack on top of themselves
 
-
-        back_button_id = self.canvas.create_image(110, 475, image=self.back_button)
-        self.canvas.tag_bind(back_button_id, "<Button-1>", self.controller.to_parent_gamestate)
-
-        self.canvas.create_window(420, 290, window=self.email_frame)
+        self.canvas.create_window(420, 302, window=self.email_frame)
         self.current_email_window.grid(row=0, column=1)
         self.email_icon_window.grid(row=0, column=0, sticky="nw")
         self.email_pagination_frame.grid(row=1, column=0, sticky="sw")
-        self.prev_button.grid(row=0, column=0, padx=10, pady=10)
-        self.next_button.grid(row=0, column=2, padx=5, pady=10)
-        self.current_emails_label.grid(row=0, column=1, padx=10, pady=10)
+        self.prev_button.grid(row=0, column=0, padx=10, pady=5, sticky="sw")
+        self.next_button.grid(row=0, column=2, padx=5, pady=5, sticky="se")
+        self.current_emails_label.grid(row=0, column=1, pady=10)
 
 
         self.emails_to_load_list = []
@@ -90,15 +96,36 @@ class EmailView:
 
         self.load_email_icons(add_new_email=False)
 
-        self.current_emails_label.config(text=f"{len(self.emails_to_load_list)} of {len(self.emails_to_load_list)}")
+        self.current_emails_label.config(text=f"1 - 4 of {len(self.emails_to_load_list)}")
 
+        self.title_bar_id = self.create_title_bar()
 
-        if len(self.emails_to_load_list) > 4:
-            self.prev_button.config(state="normal")
-            self.next_button.config(state="normal")
-            self.current_emails_label.config(text=f"5 of {len(self.emails_to_load_list)}")
+    def create_title_bar(self):
+        self.canvas.delete("titlebar", "close_window", "close_window_x")
+        self.root.update_idletasks()
+        frame_width = self.email_frame.winfo_width()
+        frame_x = self.email_frame.winfo_x()
+        frame_y = self.email_frame.winfo_y()
+
+        x1 = frame_x
+        y1 = frame_y - 30
+        x2 = frame_x + frame_width
+        y2 = frame_y
+
+        titlebar_id = self.canvas.create_rectangle(x1 - 5, y1, x2 - 5, y2, fill="blue", tags="titlebar")
+        self.canvas.tag_raise("close_window")
+        self.canvas.tag_raise("close_window_x")
+
+        close_window_id = self.canvas.create_rectangle(x2 - 30, y1 + 5, x2 - 10, y1 + 25, fill="red", tags="close_window")
+        self.canvas.tag_bind(close_window_id, "<Button-1>", self.controller.to_computer_view)
+        close_window_x = self.canvas.create_text(x2 - 20, y1 + 15, text="X", fill="white", tags="close_window_x")
+        self.canvas.tag_bind(close_window_x, "<Button-1>", self.controller.to_computer_view)
+
+        return titlebar_id
 
     def load_email_icons(self, add_new_email):
+        idx_list = []
+
         for widget in self.email_icon_window.grid_slaves():
             widget.grid_remove()
         self.email_buttons_list = []
@@ -129,28 +156,37 @@ class EmailView:
                                          border=0, highlightthickness=0, justify=tk.LEFT,
                                          command=lambda email_i=self.email_dict[email_by_idx]: self.load_email(email_i))
                 self.email_buttons_list.append(email_button)
-                if i <= 4:
+
+                if i <4:
                     email_button.page_num = 0
-                else:
+                elif 4 <= i < 8:
                     email_button.page_num = 1
+                elif 8 <= i < 11:
+                    email_button.page_num = 2
                 if email_button.page_num == self.current_page_num:
                     email_button.grid(row=i, column=0, pady=(0, 10))
+                    idx_list.append(i)
+
+        if len(self.emails_to_load_list) > 4:
+            self.prev_button.config(state="normal")
+            self.next_button.config(state="normal")
+        self.current_emails_label.config(text=f"{min(idx_list) + 1} - {max(idx_list) + 1} of {len(self.emails_to_load_list)}")
 
     def load_email(self, email_i):
         self.current_email_window.config(state="normal")
         self.current_email_window.delete(1.0, tk.END)
 
         # Before adding body, add header information
-        self.current_email_window.insert(tk.END,"From: ", "bold_tag")
+        self.current_email_window.insert(tk.END,"From: ")
         self.current_email_window.insert(tk.END,f"{email_i["sender"]}\n")
-        self.current_email_window.insert(tk.END,f"To: ", "bold_tag")
+        self.current_email_window.insert(tk.END,f"To: ")
         self.current_email_window.insert(tk.END,f"{email_i["recipient"]}\n")
-        self.current_email_window.insert(tk.END,f"Sent: ", "bold_tag")
+        self.current_email_window.insert(tk.END,f"Sent: ")
         self.current_email_window.insert(tk.END,f"{email_i["timestamp"]}\n")
-        self.current_email_window.insert(tk.END,f"Subject: ", "bold_tag")
+        self.current_email_window.insert(tk.END,f"Subject: ")
         self.current_email_window.insert(tk.END,f"{email_i["subject"]}\n\n")
 
-        self.current_email_window.insert(tk.END, email_i["body"], "normal_tag")
+        self.current_email_window.insert(tk.END, email_i["body"])
 
         self.current_email_window.config(state="disabled")
 
@@ -158,37 +194,39 @@ class EmailView:
         print("This ran")
         self.load_email_icons(add_new_email=True)
 
-        if len(self.emails_to_load_list) > 5:
-            self.current_emails_label.config(text=f"5 of {len(self.emails_to_load_list)}")
-        else:
-            self.current_emails_label.config(text=f"{len(self.emails_to_load_list)} of {len(self.emails_to_load_list)}")
-
         self.controller.mail_sfx.play()
 
-    def load_next_page(self):
-        currently_loaded = 0
+    def update_page_display(self):
         for widget in self.email_icon_window.grid_slaves():
-            widget.grid_remove()
+            widget.grid_forget()
+        start = self.current_page_num * self.PAGE_SIZE
 
-        self.current_page_num = min(self.current_page_num + 1, 1)
-        for i, email_button in enumerate(self.email_buttons_list):
-            if email_button.page_num == self.current_page_num:
-                email_button.grid(row=i, column=0, pady=(0, 10))
-                currently_loaded += 1
+        end = start + self.PAGE_SIZE
+        page_items = self.email_buttons_list[start:end]
 
-        self.current_emails_label.config(
-            text=f"{currently_loaded} of {len(self.emails_to_load_list)}")
+        for i, btn in enumerate(page_items):
+            btn.grid(row=i, column=0, pady=(0, 10), sticky="w")
+
+        max_page = max(0, (len(self.email_buttons_list) - 1) // self.PAGE_SIZE)
+
+        self.prev_button.config(state="normal" if self.current_page_num > 0 else "disabled")
+        self.next_button.config(state="normal" if self.current_page_num < max_page else "disabled")
+
+        total = len(self.email_buttons_list)
+        if total > 0:
+            self.current_emails_label.config(text=f"{start + 1} - {min(end, total)} of {total}")
+        else:
+            self.current_emails_label.config(text="0 - 0 of 0")
+
+        self.create_title_bar()
+
+    def load_next_page(self):
+        max_page = max(0, (len(self.email_buttons_list) - 1) // self.PAGE_SIZE)
+        if self.current_page_num < max_page:
+            self.current_page_num += 1
+            self.update_page_display()
 
     def load_prev_page(self):
-        currently_loaded = 0
-        for widget in self.email_icon_window.grid_slaves():
-            widget.grid_remove()
-
-        self.current_page_num = max(self.current_page_num - 1, 0)
-        for i, email_button in enumerate(self.email_buttons_list):
-            if email_button.page_num == self.current_page_num:
-                email_button.grid(row=i, column=0, pady=(0, 10))
-                currently_loaded += 1
-
-        self.current_emails_label.config(
-            text=f"{currently_loaded} of {len(self.emails_to_load_list)}")
+        if self.current_page_num > 0:
+            self.current_page_num -= 1
+            self.update_page_display()

@@ -11,7 +11,7 @@ class TitleScreen:
 
         self.start_button = tk.Button(self.root, text="Clock In", font=("Courier", 12),
                                       command=lambda: self.controller.to_desk_view(event=None))
-        self.title_textfield = tk.Text(self.root, font=("Courier", 24), width=25, height=1, bg="black", fg="white",
+        self.title_textfield = tk.Text(self.root, font=("W95FA", 24), width=25, height=1, bg="black", fg="white",
                                        borderwidth=0, highlightthickness=0)
 
 
@@ -23,7 +23,7 @@ class TitleScreen:
         self.title_idx = 0
         if self.controller.gamestate == "title":
             self.starfield_inst.generate_starfield()
-            self.game_title_id = self.canvas.create_window(400, 150, window=self.title_textfield)
+            self.game_title_id = self.canvas.create_window(450, 150, window=self.title_textfield)
             self.start_button_id = self.canvas.create_window(400, 300, window=self.start_button)
             self.title_screen_telescope_id = self.canvas.create_image(400, 300, image=self.title_screen_telescope)
             self.game_credits_id = self.canvas.create_text(630, 550,

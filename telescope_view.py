@@ -1,8 +1,8 @@
+import os
 import random
 from datetime import datetime
-
 import tkinter as tk
-from PIL import ImageGrab
+import tkinter.font as tkfont
 
 import starfield
 import assetloader
@@ -14,8 +14,12 @@ class TelescopeView:
         self.controller = controller
         self.starfield_inst = starfield.Starfield(self.root, self.canvas)
 
+        self.font = tkfont.Font(family="W95FA", size=16)
+
         self.image_dict = assetloader.load_images()
         self.transit_object_dict = assetloader.load_transit_objects()
+        self.pil_transit_object_dict = assetloader.load_pil_transit_objects()
+
         self.screen_bezel = self.image_dict["screen-bezel.png"]
         self.back_button = self.image_dict["back-button.png"]
         self.screenshot_button = self.image_dict["icon-camera.png"]
@@ -27,17 +31,17 @@ class TelescopeView:
         self.canvas.delete("all")
         self.starfield_inst.generate_starfield()
 
-        screenshot_button_id = self.canvas.create_image(700, 500, image=self.screenshot_button)
-        self.canvas.tag_bind(screenshot_button_id, "<Button-1>", self.capture_canvas)
+        screenshot_button_id = tk.Button(text="Take Photo", command=self.save_game_state)
+        self.canvas.create_window(600, 500, window=screenshot_button_id)
 
-        self.canvas.create_rectangle(600, 50, 750, 100, fill="blue")
+        self.canvas.create_rectangle(600, 100, 800, 40, fill="blue")
 
         now = datetime.now()
         formatted_time = now.strftime("%I:%M:%S %p")
         formatted_date = now.strftime("%d/%m")
-        time_to_display = f"{formatted_time}, {formatted_date}/1993"
+        time_to_display = f"{formatted_time}\n{formatted_date}/1993"
 
-        self.datetime_label_id = self.canvas.create_text(670, 75, text=time_to_display, fill="white")
+        self.datetime_label_id = self.canvas.create_text(670, 75, text=time_to_display, fill="white", font=self.font)
 
         screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
 
@@ -51,15 +55,16 @@ class TelescopeView:
 
     def create_transit_object(self):
         if self.controller.gamestate == "telescope":
-            if random.random() > 0.5:
+            if random.random() > 0.01:
                 transit_image_name = random.choice(list(self.transit_object_dict.keys()))
                 if random.random() > 0.5:
-                    transit_object_id = self.canvas.create_image(200, 300, image=self.transit_object_dict[transit_image_name], tags=("nonplanet", "moving_right"))
+                    transit_object_id = self.canvas.create_image(200, 300, image=self.transit_object_dict[transit_image_name],
+                                                                 tags=("nonplanet", "moving_right"), pil_image=self.pil_transit_object_dict[transit_image_name])
                     self.update_transit_object(transit_object_id)
                 else:
                     transit_object_id = self.canvas.create_image(200, 300,
                                                                  image=self.transit_object_dict[transit_image_name],
-                                                                 tags=("nonplanet", "left"))
+                                                                 tags=("nonplanet", "left"), pil_image=self.pil_transit_object_dict[transit_image_name])
                     self.update_transit_object(transit_object_id)
             else:
                 if random.random() > 0.5:
@@ -78,9 +83,9 @@ class TelescopeView:
         if self.controller.gamestate == "telescope":
             if pos:
                 if "moving_right" in self.canvas.gettags(transit_object_id) and pos[0] < 700:
-                    self.canvas.move(transit_object_id, 10, 0)
+                    self.canvas.move(transit_object_id, 3, 0)
                 elif "moving_left" in self.canvas.gettags(transit_object_id) and pos[0] > 200:
-                    self.canvas.move(transit_object_id, -10, 0)
+                    self.canvas.move(transit_object_id, -3, 0)
                 else:
                     self.canvas.delete(transit_object_id)
 
@@ -90,22 +95,20 @@ class TelescopeView:
         now = datetime.now()
         formatted_time = now.strftime("%I:%M:%S %p")
         formatted_date = now.strftime("%d/%m")
-        time_to_display = f"{formatted_time}, {formatted_date}/1993"
+        time_to_display = f"{formatted_time}\n{formatted_date}/1993"
         self.canvas.itemconfigure(self.datetime_label_id, text=time_to_display)
         self.root.after(1000, self.update_datetime)
 
-    def capture_canvas(self):
-        # Ensure the canvas is updated and its position is known
-        self.canvas.update()
-        x0 = self.root.winfo_rootx()
-        y0 = self.root.winfo_rooty()
+    def save_game_state(self):
+        now = datetime.now()
+        formatted_time = now.strftime("%I.%M.%S.%p")
+        formatted_date = now.strftime("%d.%m")
+        time_to_display = f"{formatted_time}_{formatted_date}.1993"
 
-        # Calculate the coordinates of the bottom-right corner
-        x1 = x0 + 800
-        y1 = y0 + 600
+        img = self.controller.canvas.get_snapshot()
 
-        # Grab the screenshot using PIL.ImageGrab
-        # The bounding box is a tuple of (left, top, right, bottom)
-        screenshot = ImageGrab.grab(bbox=(x0, y0, x1, y1))
-        screenshot.save("tkinter_screenshot.png")
-        print(f"Screenshot saved as tkinter_screenshot.png with coordinates: {(x0, y0, x1, y1)}")
+        if not os.path.exists("screenshots"):
+            os.makedirs("screenshots")
+
+        img.save(f"screenshots/{time_to_display}.png")
+        print(f"Saved to screenshots/{time_to_display}.png")

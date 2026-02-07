@@ -21,7 +21,7 @@ class ComputerView:
         self.controller.gamestate = "computer"
         self.canvas.delete("all")
 
-        desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="dark gray")
+        desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="teal")
         screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
 
         icon_trash_id = self.canvas.create_image(110, 80, image=self.icon_trash)
@@ -30,6 +30,7 @@ class ComputerView:
         self.canvas.tag_bind(icon_telescope_id, "<Button-1>", self.controller.to_telescope_view)
 
         icon_photos_id = self.canvas.create_image(110, 240, image=self.icon_photos)
+        self.canvas.tag_bind(icon_photos_id, "<Button-1>", self.controller.to_photos_view)
 
         icon_email_id = self.canvas.create_image(110, 320, image=self.icon_email)
         self.canvas.tag_bind(icon_email_id, "<Button-1>", self.controller.to_email_view)
