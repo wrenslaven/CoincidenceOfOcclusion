@@ -77,10 +77,11 @@ class Controller:
 
     def to_parent_gamestate(self, event):
         if self.gamestate == "computer":
-            print(self.gamestate)
             self.to_desk_view(event=None)
-        elif self.gamestate == "telescope" or self.gamestate == "email" or self.gamestate == "archive":
-            self.to_computer_view(event=None)
+        elif self.gamestate == "screenshot_icons" or self.gamestate == "archive_icons":
+            self.to_photos_view(event=None)
+        elif self.gamestate == "screenshot":
+            self.photos_view_inst.load_screenshot_icons_view(event=None)
         else:
             print(self.gamestate)
 

@@ -62,6 +62,7 @@ class SaveableCanvas(tk.Canvas):
             elif item_type == "image":
                 original_pil = self._pil_map.get(item_id)
                 if original_pil:
+                    print(original_pil)
                     x, y = coords
                     anchor = self.itemcget(item_id, "anchor")
                     w_img, h_img = original_pil.size

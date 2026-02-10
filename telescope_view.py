@@ -21,7 +21,7 @@ class TelescopeView:
         self.pil_transit_object_dict = assetloader.load_pil_transit_objects()
 
         self.screen_bezel = self.image_dict["screen-bezel.png"]
-        self.back_button = self.image_dict["back-button.png"]
+        self.home_button = self.image_dict["icon-home.png"]
         self.screenshot_button = self.image_dict["icon-camera.png"]
 
         self.datetime_label_id = None
@@ -32,7 +32,7 @@ class TelescopeView:
         self.starfield_inst.generate_starfield()
 
         screenshot_button_id = tk.Button(text="Take Photo", command=self.save_game_state)
-        self.canvas.create_window(600, 500, window=screenshot_button_id)
+        self.canvas.create_window(650, 490, window=screenshot_button_id)
 
         self.canvas.create_rectangle(600, 100, 800, 40, fill="blue")
 
@@ -45,8 +45,8 @@ class TelescopeView:
 
         screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
 
-        back_button_id = self.canvas.create_image(110, 475, image=self.back_button)
-        self.canvas.tag_bind(back_button_id, "<Button-1>", self.controller.to_parent_gamestate)
+        home_button_id = self.canvas.create_image(115, 475, image=self.home_button)
+        self.canvas.tag_bind(home_button_id, "<Button-1>", self.controller.to_parent_gamestate)
 
         self.canvas.create_oval(350, 250, 450, 350, fill="yellow")
 
@@ -62,9 +62,9 @@ class TelescopeView:
                                                                  tags=("nonplanet", "moving_right"), pil_image=self.pil_transit_object_dict[transit_image_name])
                     self.update_transit_object(transit_object_id)
                 else:
-                    transit_object_id = self.canvas.create_image(200, 300,
+                    transit_object_id = self.canvas.create_image(600, 300,
                                                                  image=self.transit_object_dict[transit_image_name],
-                                                                 tags=("nonplanet", "left"), pil_image=self.pil_transit_object_dict[transit_image_name])
+                                                                 tags=("nonplanet", "moving_left"), pil_image=self.pil_transit_object_dict[transit_image_name])
                     self.update_transit_object(transit_object_id)
             else:
                 if random.random() > 0.5:
@@ -101,14 +101,14 @@ class TelescopeView:
 
     def save_game_state(self):
         now = datetime.now()
-        formatted_time = now.strftime("%I.%M.%S.%p")
-        formatted_date = now.strftime("%d.%m")
-        time_to_display = f"{formatted_time}_{formatted_date}.1993"
+        formatted_time = now.strftime("%H.%M.%S")
+        formatted_date = now.strftime("%y.%m.%d")
+        time_to_save = f"{formatted_date}_{formatted_time}"
 
         img = self.controller.canvas.get_snapshot()
 
         if not os.path.exists("screenshots"):
             os.makedirs("screenshots")
 
-        img.save(f"screenshots/{time_to_display}.png")
-        print(f"Saved to screenshots/{time_to_display}.png")
+        img.save(f"screenshots/{time_to_save}.png")
+        print(f"Saved to screenshots/{time_to_save}.png")

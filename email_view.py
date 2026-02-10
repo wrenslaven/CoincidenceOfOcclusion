@@ -40,6 +40,7 @@ class EmailView:
         self.icon_telescope = self.image_dict["icon-telescope.png"]
         self.icon_photos = self.image_dict["icon-photos.png"]
         self.icon_email = self.image_dict["icon-email.png"]
+        self.icon_home = self.image_dict["icon-home.png"]
 
         self.current_page_num = 0
 
@@ -59,11 +60,7 @@ class EmailView:
                                      state="disabled")
         self.current_emails_label = tk.Label(self.email_pagination_frame, text=f"1 - 4 of 4", width=11)
 
-
-
     def load_email_view(self, event):
-        currently_loaded = 0
-
         self.controller.gamestate = "email"
 
         desktop_bg_id = self.canvas.create_rectangle(0, 0, 800, 600, fill="teal")
@@ -77,8 +74,10 @@ class EmailView:
         icon_photos_id = self.canvas.create_image(110, 240, image=self.icon_photos)
         self.canvas.tag_bind(icon_photos_id, "<Button-1>", self.controller.to_photos_view)
 
+        icon_home_id = self.canvas.create_image(115, 475, image=self.icon_home)
+        self.canvas.tag_bind(icon_home_id, "<Button-1>", self.controller.to_parent_gamestate)
+
         icon_email_id = self.canvas.create_image(110, 320, image=self.icon_email)
-        # Remember not to tag_bind widgets when their window is already up, so they don't stack on top of themselves
 
         self.canvas.create_window(420, 302, window=self.email_frame)
         self.current_email_window.grid(row=0, column=1)
@@ -107,10 +106,7 @@ class EmailView:
         frame_x = self.email_frame.winfo_x()
         frame_y = self.email_frame.winfo_y()
 
-        x1 = frame_x
-        y1 = frame_y - 30
-        x2 = frame_x + frame_width
-        y2 = frame_y
+        x1, y1, x2, y2 = frame_x, frame_y - 30, frame_x + frame_width, frame_y
 
         titlebar_id = self.canvas.create_rectangle(x1 - 5, y1, x2 - 5, y2, fill="blue", tags="titlebar")
         self.canvas.tag_raise("close_window")
@@ -191,7 +187,6 @@ class EmailView:
         self.current_email_window.config(state="disabled")
 
     def send_new_email(self):
-        print("This ran")
         self.load_email_icons(add_new_email=True)
 
         self.controller.mail_sfx.play()

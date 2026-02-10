@@ -3,39 +3,48 @@ import os
 
 from PIL import Image, ImageTk
 
-image_names = ["title-screen-telescope.png", "screen-bezel.png", "light-switch-ON.png", "light-switch-OFF.png",
-               "icon-trash.png", "icon-telescope.png", "icon-photos.png", "icon-email.png", "desk-view.png", "back-button.png", "icon-camera.png", "icon-folder.png"]
-
-transit_object_names = ["transit-object-airplane.png", "transit-object-big-branch.png", "transit-object-box1.png",
-                        "transit-object-box2.png", "transit-object-clock.png", "transit-object-computer.png",
-                        "transit-object-egg.png", "transit-object-egg.png", "transit-object-letter.png", "transit-object-little-thing.png",
-                        "transit-object-lock.png", "transit-object-notebook.png", "transit-object-questionmark.png", "transit-object-small-branch.png",
-                        "transit-object-spacestation.png", "transit-object-stick1.png"]
-
-def load_images():
+def load_images(folder_path="art/icons-and-misc"):
     photo_image_dict = {}
-    for image in image_names:
-        image_path = f"art/{image}"
-        pil_image = Image.open(image_path)
-        photo_image = ImageTk.PhotoImage(pil_image)
-        photo_image_dict[image] = photo_image
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.lower().endswith('.png'):
+            full_path = os.path.join(folder_path, filename)
+            try:
+                pil_image = Image.open(full_path)
+                tk_image = ImageTk.PhotoImage(pil_image)
+                tk_image.filename = filename
+                photo_image_dict[filename] = tk_image
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
     return photo_image_dict
 
-def load_transit_objects():
+def load_transit_objects(folder_path="art/transit_objects"):
     transit_object_dict = {}
-    for image in transit_object_names:
-        image_path = f"art/transit_objects/{image}"
-        pil_image = Image.open(image_path)
-        photo_image = ImageTk.PhotoImage(pil_image)
-        transit_object_dict[image] = photo_image
+
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.lower().endswith('.png'):
+            full_path = os.path.join(folder_path, filename)
+            try:
+                pil_image = Image.open(full_path)
+                tk_image = ImageTk.PhotoImage(pil_image)
+                tk_image.filename = filename
+                transit_object_dict[filename] = tk_image
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
     return transit_object_dict
 
-def load_pil_transit_objects():
+def load_pil_transit_objects(folder_path="art/transit_objects"):
     pil_transit_object_dict = {}
-    for image in transit_object_names:
-        image_path = f"art/transit_objects/{image}"
-        pil_image = Image.open(image_path)
-        pil_transit_object_dict[image] = pil_image
+
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.lower().endswith('.png'):
+            full_path = os.path.join(folder_path, filename)
+            try:
+                pil_image = Image.open(full_path)
+                tk_image = ImageTk.PhotoImage(pil_image)
+                tk_image.filename = filename
+                pil_transit_object_dict[filename] = pil_image
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
     return pil_transit_object_dict
 
 
@@ -58,3 +67,44 @@ def load_custom_font(font_path):
     num_fonts_added = add_font_resource(path_buf, FR_PRIVATE, 0)
 
     return bool(num_fonts_added)
+
+def load_icons(folder_path):
+    icon_photo_images = []
+    for filename in sorted(os.listdir(folder_path), reverse=True):
+        if filename.lower().endswith('.png'):
+            full_path = os.path.join(folder_path, filename)
+            try:
+                pil_image = Image.open(full_path)
+                resized_image = pil_image.resize((80, 60))
+                tk_image = ImageTk.PhotoImage(resized_image)
+                tk_image.filename = filename
+                icon_photo_images.append(tk_image)
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
+    return icon_photo_images
+
+def load_screenshot(folder_path):
+    screenshot_photo_images_dict = {}
+
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.lower().endswith('.png'):
+            full_path = os.path.join(folder_path, filename)
+            try:
+                pil_image = Image.open(full_path)
+                resized_image = pil_image.resize((500, 375))
+                tk_image = ImageTk.PhotoImage(resized_image)
+                tk_image.filename = filename
+                screenshot_photo_images_dict[filename] = tk_image
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
+    return screenshot_photo_images_dict
+
+def load_single_image(folder_path, filename):
+    full_path = os.path.join(folder_path, filename)
+    try:
+        pil_image = Image.open(full_path)
+        resized_image = pil_image.resize((500, 375))
+        return ImageTk.PhotoImage(resized_image)
+    except Exception as e:
+        print(f"Error loading {filename}: {e}")
+        return None
