@@ -22,7 +22,7 @@ class TelescopeView:
 
         self.screen_bezel = self.image_dict["screen-bezel.png"]
         self.home_button = self.image_dict["icon-home.png"]
-        self.screenshot_button = self.image_dict["icon-camera.png"]
+        self.screenshot_button = None
 
         self.datetime_label_id = None
 
@@ -31,24 +31,24 @@ class TelescopeView:
         self.canvas.delete("all")
         self.starfield_inst.generate_starfield()
 
-        screenshot_button_id = tk.Button(text="Take Photo", command=self.save_game_state)
-        self.canvas.create_window(650, 490, window=screenshot_button_id)
+        self.screenshot_button = tk.Button(text="Take Photo", command=self.save_game_state)
+        self.canvas.create_window(650, 490, window=self.screenshot_button)
 
-        self.canvas.create_rectangle(600, 100, 800, 40, fill="blue")
+        datetime_bg_id = self.canvas.create_rectangle(600, 30, 800, 100, fill="blue")
 
         now = datetime.now()
         formatted_time = now.strftime("%I:%M:%S %p")
         formatted_date = now.strftime("%d/%m")
         time_to_display = f"{formatted_time}\n{formatted_date}/1993"
 
-        self.datetime_label_id = self.canvas.create_text(670, 75, text=time_to_display, fill="white", font=self.font)
+        self.datetime_label_id = self.canvas.create_text(670, 70, text=time_to_display, fill="white", font=self.font)
 
         screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
 
         home_button_id = self.canvas.create_image(115, 475, image=self.home_button)
-        self.canvas.tag_bind(home_button_id, "<Button-1>", self.controller.to_parent_gamestate)
+        self.canvas.tag_bind(home_button_id, "<Button-1>", self.controller.to_computer_view)
 
-        self.canvas.create_oval(350, 250, 450, 350, fill="yellow")
+        star_id = self.canvas.create_oval(350, 250, 450, 350, fill="yellow", tags="star")
 
         self.update_datetime()
 
@@ -75,12 +75,45 @@ class TelescopeView:
                                                                 tags=("planet", "moving_left"))
                     self.update_transit_object(transit_object_id)
 
+    def create_messagebox(self):
+        self.controller.gamestate = "messagebox"
+        messagebox_window_id = self.canvas.create_rectangle(250, 200, 550, 310, fill="white", tags="messagebox")
+        titlebar_id = self.create_title_bar()
+        message = self.canvas.create_text(260, 210, text="Artifacting detected in transit photo.\nPlease delete this photo and refrain from\nphotographing artifacting in the future.",
+                                          anchor="nw", justify="left", tags="messagebox", font=("W95FA", 12))
+        self.screenshot_button.config(state="disabled")
+
+        ok_button = tk.Button(text="OK", command = lambda: self.destroy_messagebox(event=None), width=8)
+        ok_button_id = self.canvas.create_window(400, 290, window=ok_button, tags="messagebox")
+
+    def destroy_messagebox(self, event):
+        self.controller.gamestate = "telescope"
+        self.canvas.delete("messagebox", "titlebar")
+        self.screenshot_button.config(state="normal")
+
+    def create_title_bar(self):
+        self.canvas.delete("titlebar", "close_window", "close_window_x")
+        self.root.update_idletasks()
+        frame_width = 300  # hardcoded because this is a rectangle not a frame with .winfo
+        frame_x = 250
+        frame_y = 200
+
+        x1, y1, x2, y2 = frame_x, frame_y - 30, frame_x + frame_width, frame_y
+
+        titlebar_id = self.canvas.create_rectangle(x1, y1, x2, y2, fill="blue", tags="titlebar")
+
+        close_window_id = self.canvas.create_rectangle(x2 - 25, y1 + 5, x2 - 5, y1 + 25, fill="red", tags="titlebar")
+        self.canvas.tag_bind(close_window_id, "<Button-1>", lambda event: self.destroy_messagebox(event=None))
+        close_window_x = self.canvas.create_text(x2 - 15, y1 + 15, text="X", fill="white", tags="titlebar")
+        self.canvas.tag_bind(close_window_x, "<Button-1>", lambda event: self.destroy_messagebox(event=None))
+
+        return titlebar_id
 
     def update_transit_object(self, transit_object_id):
         self.root.update_idletasks()
         pos = self.canvas.coords(transit_object_id)
 
-        if self.controller.gamestate == "telescope":
+        if self.controller.gamestate == "telescope" or self.controller.gamestate == "messagebox":
             if pos:
                 if "moving_right" in self.canvas.gettags(transit_object_id) and pos[0] < 700:
                     self.canvas.move(transit_object_id, 3, 0)
@@ -111,4 +144,8 @@ class TelescopeView:
             os.makedirs("screenshots")
 
         img.save(f"screenshots/{time_to_save}.png")
+
+        self.controller.screenshot_data_dict[f"{time_to_save}.png"] = f"screenshot_{self.controller.current_screenshot_num}"
+        self.controller.current_screenshot_num += 1
+
         print(f"Saved to screenshots/{time_to_save}.png")

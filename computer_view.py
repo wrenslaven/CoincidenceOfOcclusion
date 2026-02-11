@@ -25,6 +25,7 @@ class ComputerView:
         screen_bezel_id = self.canvas.create_image(400, 300, image=self.screen_bezel)
 
         icon_trash_id = self.canvas.create_image(110, 80, image=self.icon_trash)
+        self.canvas.tag_bind(icon_trash_id, "<Button-1>", self.controller.to_trash_view)
 
         icon_telescope_id = self.canvas.create_image(110, 160, image=self.icon_telescope)
         self.canvas.tag_bind(icon_telescope_id, "<Button-1>", self.controller.to_telescope_view)

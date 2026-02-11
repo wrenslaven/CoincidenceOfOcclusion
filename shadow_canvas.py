@@ -3,10 +3,11 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 class SaveableCanvas(tk.Canvas):
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, controller, **kwargs):
         super().__init__(master, **kwargs)
         self._pil_map = {}
         self.bg_color = kwargs.get("bg", "black")
+        self.controller=controller
 
     def create_image(self, *args, **kwargs):
         source_pil_image = kwargs.pop('pil_image', None)
@@ -14,6 +15,19 @@ class SaveableCanvas(tk.Canvas):
         if source_pil_image:
             self._pil_map[item_id] = source_pil_image
         return item_id
+
+    def detect_transit(self):
+        non_planets = []
+        for item_id in self.find_all():
+            tags = self.gettags(item_id)
+            if "nonplanet" in tags:
+                non_planets.append(item_id)
+        overlapping_items = self.find_overlapping(350, 250, 450, 350)
+        for item in overlapping_items:
+            if item in non_planets:
+                print("artifact in transit")
+                self.controller.telescope_view_inst.create_messagebox()
+
 
     def _get_hex_color(self, color_name):
         if not color_name:
@@ -25,6 +39,8 @@ class SaveableCanvas(tk.Canvas):
             return None
 
     def get_snapshot(self):
+        self.detect_transit()
+
         w = self.winfo_width()
         h = self.winfo_height()
 
@@ -55,6 +71,8 @@ class SaveableCanvas(tk.Canvas):
                     normalized_coords = [min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)]
 
                     if item_type == "rectangle":
+                        if "messagebox" in self.gettags(item_id) or "titlebar" in self.gettags(item_id):
+                            continue
                         draw.rectangle(normalized_coords, fill=pil_fill, outline=pil_outline, width=int(width))
                     elif item_type == "oval":
                         draw.ellipse(normalized_coords, fill=pil_fill, outline=pil_outline, width=int(width))
@@ -62,7 +80,6 @@ class SaveableCanvas(tk.Canvas):
             elif item_type == "image":
                 original_pil = self._pil_map.get(item_id)
                 if original_pil:
-                    print(original_pil)
                     x, y = coords
                     anchor = self.itemcget(item_id, "anchor")
                     w_img, h_img = original_pil.size
@@ -82,6 +99,8 @@ class SaveableCanvas(tk.Canvas):
                     output_image.paste(original_pil, (paste_x, paste_y), original_pil)
 
             elif item_type == "text":
+                if "messagebox" in self.gettags(item_id) or "titlebar" in self.gettags(item_id):
+                    continue
                 text_string = self.itemcget(item_id, "text")
                 raw_fill = self.itemcget(item_id, "fill")
                 pil_fill = self._get_hex_color(raw_fill)

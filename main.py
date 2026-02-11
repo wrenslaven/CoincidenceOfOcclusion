@@ -1,3 +1,5 @@
+import json
+import os
 import tkinter as tk
 import assetloader
 import starfield
@@ -9,11 +11,22 @@ from title_screen import TitleScreen
 from telescope_view import TelescopeView
 import pygame
 from shadow_canvas import SaveableCanvas
+from trash_view import TrashView
+ 
+#TODO: Preserve screenshot name when it's sent between trash and screenshots. Persistent reference associated with image
+
+BOILERPLATE_SAVE_FILE = {
+  "current_screenshot_num" : 1,
+  "screenshots" : {
+
+  }
+}
 
 class Controller:
     """Controller class for the gamestates."""
     def __init__(self):
         self.root = root
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.gamestate = "title"
 
@@ -25,11 +38,13 @@ class Controller:
 
         self.pil_image_dict_inst = assetloader.load_pil_transit_objects()
 
+        self.load_game()
+
         # --- UI ELEMENTS ---
         self.starfield_frame = tk.Frame(self.root)
         self.starfield_frame.pack()
 
-        self.canvas = SaveableCanvas(self.starfield_frame, bg="black", width=790, height=590, borderwidth=0, highlightthickness=0)
+        self.canvas = SaveableCanvas(self.starfield_frame, self, bg="black", width=790, height=590, borderwidth=0, highlightthickness=0)
         self.canvas.pack()
 
         # --- States/Class Instances ---
@@ -41,6 +56,7 @@ class Controller:
         self.email_view_inst = EmailView(self.root, self, self.canvas)
         self.telescope_view_inst = TelescopeView(self.root, self, self.canvas)
         self.photos_view_inst = PhotosView(self.root, self, self.canvas)
+        self.trash_view_inst = TrashView(self.root, self, self.canvas)
 
         # --- AUDIO ---
 
@@ -75,9 +91,14 @@ class Controller:
     def to_photos_view(self, event):
         self.photos_view_inst.load_photos_view(event)
 
+    def to_trash_view(self, event):
+        self.trash_view_inst.load_trash_view(event)
+
     def to_parent_gamestate(self, event):
         if self.gamestate == "computer":
             self.to_desk_view(event=None)
+        # elif self.gamestate in ["email", "telescope", "photos"]:
+        #     self.to_computer_view(event=None)
         elif self.gamestate == "screenshot_icons" or self.gamestate == "archive_icons":
             self.to_photos_view(event=None)
         elif self.gamestate == "screenshot":
@@ -91,14 +112,43 @@ class Controller:
             self.new_transit_timer += 1
             self.new_email_timer += 1
 
-        if self.new_email_timer % 5 == 0 and len(self.email_view_inst.emails_to_load_list) < 10:
+        if self.new_email_timer > 60 and len(self.email_view_inst.emails_to_load_list) < 10:
             self.email_view_inst.send_new_email()
-            self.new_email_timer = 1
-        if self.new_transit_timer % 5 == 0:
+            self.new_email_timer = 0
+        if self.new_transit_timer > 5:
             self.telescope_view_inst.create_transit_object()
-            self.new_transit_timer = 1
+            self.new_transit_timer = 0
 
         self.root.after(1000, self.main_game_loop)
+
+    def load_game(self):
+        if not os.path.exists("savedata.json"):
+            print(f"'{"savedata.json"}' not found. Creating it with boilerplate data.")
+            try:
+                with open("savedata.json", 'w') as f:
+                    json.dump(BOILERPLATE_SAVE_FILE, f, indent=4)
+            except IOError as e:
+                print(f"Error creating file: {e}")
+        else:
+            with open("savedata.json", 'r', encoding='utf-8') as file:
+                try:
+                    data = json.load(file)
+                except json.JSONDecodeError:
+                    data = BOILERPLATE_SAVE_FILE
+        self.current_screenshot_num = data["current_screenshot_num"] # Tracks current number to assign to screenshots
+        self.screenshot_data_dict = data["screenshots"] # Stores the number associated with the screenshot (persistent across sessions/scenes)
+
+    def save_game(self):
+        data = {
+            "current_screenshot_num" : self.current_screenshot_num,
+            "screenshots" : self.screenshot_data_dict
+        }
+        with open("savedata.json", "w") as file:
+            json.dump(data, file, indent=4)
+
+    def on_closing(self):
+        self.save_game()
+        root.destroy()  # This actually closes the window
 
 if __name__ == "__main__":
     root = tk.Tk()
