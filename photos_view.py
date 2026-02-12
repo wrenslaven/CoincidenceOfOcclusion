@@ -77,8 +77,6 @@ class PhotosView:
         self.canvas.tag_bind(icon_home_id, "<Button-1>", self.controller.to_computer_view)
 
     def load_screenshot_icons_view(self, event):
-        #TODO: use this for displaying screenshot numbers: self.controller.screenshot_data_dict[f"{time_to_save}.png"] = f"screenshot_{self.controller.current_screenshot_num}"
-
         self.controller.gamestate = "screenshot_icons"
         self.load_desktop_basics(event=None)
 

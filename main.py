@@ -1,19 +1,16 @@
-import json
-import os
+import json, os, assetloader, starfield, pygame
 import tkinter as tk
-import assetloader
-import starfield
 from photos_view import PhotosView
 from desk_view import Deskview
 from computer_view import ComputerView
 from email_view import EmailView
 from title_screen import TitleScreen
 from telescope_view import TelescopeView
-import pygame
 from shadow_canvas import SaveableCanvas
 from trash_view import TrashView
- 
-#TODO: Preserve screenshot name when it's sent between trash and screenshots. Persistent reference associated with image
+
+#TODO: Add archive content.
+# Add back blur to transit objects? Need to make sure only the parts in front of the star are visible
 
 BOILERPLATE_SAVE_FILE = {
   "current_screenshot_num" : 1,
@@ -32,6 +29,8 @@ class Controller:
 
         self.new_email_timer = 1
         self.new_transit_timer = 1
+        self.current_screenshot_num = None
+        self.screenshot_data_dict = None
 
         assetloader.load_custom_font("fonts/w95fa.otf")
         root.option_add("*Font", "W95FA 12")

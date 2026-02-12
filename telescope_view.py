@@ -1,6 +1,7 @@
+import math
 import os
 import random
-from datetime import datetime
+from datetime import datetime, time
 import tkinter as tk
 import tkinter.font as tkfont
 
@@ -52,28 +53,31 @@ class TelescopeView:
 
         self.update_datetime()
 
-
     def create_transit_object(self):
         if self.controller.gamestate == "telescope":
-            if random.random() > 0.01:
+
+            object_vector_angle = random.randint(0, 360)
+            dx = math.cos(object_vector_angle)
+            dy = math.sin(object_vector_angle)
+            print(object_vector_angle)
+            print((dx, dy))
+
+            start_x = 400 - (100 * dx)
+            start_y = 300 - (100 * dy)
+            print(f"start coords: {start_x, start_y}")
+
+            slope = (300 - start_y) / (400 - start_x)
+
+            #line_id = self.canvas.create_line(start_x, start_y, 400, 300)
+
+            if random.random() > 0.5:
                 transit_image_name = random.choice(list(self.transit_object_dict.keys()))
-                if random.random() > 0.5:
-                    transit_object_id = self.canvas.create_image(200, 300, image=self.transit_object_dict[transit_image_name],
-                                                                 tags=("nonplanet", "moving_right"), pil_image=self.pil_transit_object_dict[transit_image_name])
-                    self.update_transit_object(transit_object_id)
-                else:
-                    transit_object_id = self.canvas.create_image(600, 300,
-                                                                 image=self.transit_object_dict[transit_image_name],
-                                                                 tags=("nonplanet", "moving_left"), pil_image=self.pil_transit_object_dict[transit_image_name])
-                    self.update_transit_object(transit_object_id)
+                transit_object_id = self.canvas.create_image(start_x, start_y, image=self.transit_object_dict[transit_image_name],
+                                                             pil_image=self.pil_transit_object_dict[transit_image_name], tags="nonplanet")
+                self.update_transit_object(transit_object_id, dx, dy)
             else:
-                if random.random() > 0.5:
-                    transit_object_id = self.canvas.create_oval(190, 290, 210, 310, fill="black", tags=("planet", "moving_right"))
-                    self.update_transit_object(transit_object_id)
-                else:
-                    transit_object_id = self.canvas.create_oval(590, 290, 610, 310, fill="black",
-                                                                tags=("planet", "moving_left"))
-                    self.update_transit_object(transit_object_id)
+                transit_object_id = self.canvas.create_oval(start_x - 10, start_y - 10, start_x + 10, start_y + 10, fill="black", tags=("planet", "moving_right"))
+                self.update_transit_object(transit_object_id, dx, dy)
 
     def create_messagebox(self):
         self.controller.gamestate = "messagebox"
@@ -109,20 +113,19 @@ class TelescopeView:
 
         return titlebar_id
 
-    def update_transit_object(self, transit_object_id):
+    def update_transit_object(self, transit_object_id, dx, dy):
         self.root.update_idletasks()
         pos = self.canvas.coords(transit_object_id)
-
-        if self.controller.gamestate == "telescope" or self.controller.gamestate == "messagebox":
-            if pos:
-                if "moving_right" in self.canvas.gettags(transit_object_id) and pos[0] < 700:
-                    self.canvas.move(transit_object_id, 3, 0)
-                elif "moving_left" in self.canvas.gettags(transit_object_id) and pos[0] > 200:
-                    self.canvas.move(transit_object_id, -3, 0)
-                else:
+        if pos:
+            if self.controller.gamestate == "telescope" or self.controller.gamestate == "messagebox":
+                rounded_and_scaled_dx = round(dx * 10)
+                rounded_and_scaled_dy = round(dy * 10)
+                self.canvas.move(transit_object_id, dx, dy)
+                print(self.canvas.coords(transit_object_id))
+                if pos[0] < 250 or pos[0] > 550 or pos[1] < 150 or pos[1] > 450:
                     self.canvas.delete(transit_object_id)
 
-        self.root.after(50, self.update_transit_object, transit_object_id)
+        self.root.after(50, self.update_transit_object, transit_object_id, dx, dy)
 
     def update_datetime(self):
         now = datetime.now()

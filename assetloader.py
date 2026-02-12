@@ -41,27 +41,15 @@ def load_pil_transit_objects(folder_path="art/transit_objects"):
             full_path = os.path.join(folder_path, filename)
             try:
                 pil_image = Image.open(full_path).convert('RGBA')
-
-                padding = 50
-                img_padded = ImageOps.expand(pil_image, border=padding, fill=(0, 0, 0, 0))
-
-                # 3. Create the Ominous Blur
-                # Instead of a circle blur, we use a BoxBlur and repeat it to create a "streak"
-                # Or use multiple Gaussian blurs offset slightly to create a "ghosting" effect
-                r, g, b, a = img_padded.split()
-                alpha_blurred = a.filter(ImageFilter.GaussianBlur(radius=5))
-
-                # 3. Create the "Chromatic Ghost"
-                # We shift a copy of the alpha slightly to the side to create an 'echo'
-                alpha_ghost = ImageChops.offset(alpha_blurred, 3, 0)  # Shift 3 pixels right
-                alpha_final = Image.blend(alpha_blurred, alpha_ghost, alpha=0.3)
-
-                # 4. Reconstruct with pitch black
-                black = Image.new('L', img_padded.size, 0)
-                final_img = Image.merge('RGBA', (black, black, black, alpha_final))
-
-
-                pil_transit_object_dict[filename] = final_img
+                # padding = 50
+                # img_padded = ImageOps.expand(pil_image, border=padding, fill=(0, 0, 0, 0))
+                # r, g, b, a = pil_image.split()
+                # alpha_blurred = a.filter(ImageFilter.GaussianBlur(radius=5))
+                # alpha_ghost = ImageChops.offset(alpha_blurred, 3, 0)  # Shift 3 pixels right
+                # alpha_final = Image.blend(alpha_blurred, alpha_ghost, alpha=0.3)
+                # black = Image.new('L', img_padded.size, 0)
+                #final_img = Image.merge('RGBA', (r, g, b, alpha_blurred))
+                pil_transit_object_dict[filename] = pil_image
             except Exception as e:
                 print(f"Error loading {filename}: {e}")
     return pil_transit_object_dict

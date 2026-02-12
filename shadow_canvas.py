@@ -28,6 +28,7 @@ class SaveableCanvas(tk.Canvas):
                 print("artifact in transit")
                 self.controller.telescope_view_inst.create_messagebox()
 
+        return overlapping_items
 
     def _get_hex_color(self, color_name):
         if not color_name:
@@ -39,7 +40,7 @@ class SaveableCanvas(tk.Canvas):
             return None
 
     def get_snapshot(self):
-        self.detect_transit()
+        overlapping_items = self.detect_transit()
 
         w = self.winfo_width()
         h = self.winfo_height()
@@ -81,6 +82,10 @@ class SaveableCanvas(tk.Canvas):
                 original_pil = self._pil_map.get(item_id)
                 if original_pil:
                     x, y = coords
+                    #350, 250, 450, 350
+                    if x < 325 or x > 475 or y < 225 or y > 375:
+                        continue
+
                     anchor = self.itemcget(item_id, "anchor")
                     w_img, h_img = original_pil.size
 
